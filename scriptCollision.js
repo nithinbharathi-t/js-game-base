@@ -121,7 +121,8 @@ const updateMovement = () => {
                 scene.remove(target);
                 collidableObject.splice(i, 1);
             } else if ( target.name === "building" ) {
-                player.position.copy(oldPosition);
+                player.position.x = oldPosition.x;
+                player.position.z = oldPosition.z;
             }
         }
     }
