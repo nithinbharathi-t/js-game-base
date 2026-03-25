@@ -1,7 +1,18 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const width = window.innerWidth, height = window.innerHeight;
+
+const aspect = width/height, d = 2;
+
+const orthoCamera = new THREE.OrthographicCamera(
+    -d * aspect, d*aspect, 
+    d, -d,
+    0.1, 10
+)
+
+const orthoCameraOffset = new THREE.Vector3(1, 1, 1);
+orthoCamera.position.copy(orthoCameraOffset);
+orthoCamera.lookAt(0,0,0)
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(1, 1, 2);
@@ -14,35 +25,11 @@ camera.position.y = cameraOffset.y;
 camera.position.z = cameraOffset.z;
 
 const loader = new THREE.TextureLoader();
-const loader3D = new GLTFLoader()
 
-loader3D.load(
-    "./tree.glb",
-    (gltf) => {
-        const model = gltf.scene;
-
-        model.scale.setScalar(0.25);
-
-        model.position.copy(new THREE.Vector3(0, -0.5, 0))
-
-        model.name = "building";
-        scene.add(model);
-        console.log("Model loaded..!");
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total * 100) + "% loaded");
-    },
-    (error) => {
-        console.error("An error happened", error);
-    }
-);
+const scene = new THREE.Scene();
 
 const buildingTexture = loader.load("./building.png");
 const planeTexture = loader.load("./grass.png");
-const sceneBGTexture = loader.load("./sky.png");
-
-const scene = new THREE.Scene();
-scene.background = sceneBGTexture;
 
 const buildingGeometry = new THREE.BoxGeometry( 1, 2, 1, 5, 5, 5 );
 const playerGeometry = new THREE.CapsuleGeometry(0.25, 0.5, 50, 100, 1);
@@ -59,10 +46,6 @@ const object = new THREE.Mesh( buildingGeometry, material );
 const plane = new THREE.Mesh( platformGeometry, planeMaterial );
 const border = new THREE.Mesh( borderGeometry, borderMaterial );
 
-player.name = "player";
-object.name = "building";
-
-
 plane.position.z = -1;
 plane.position.y = -0.35;
 
@@ -74,7 +57,7 @@ scene.add(object);
 scene.add(plane);
 scene.add(light);
 scene.add(ambient);
-scene.add(loader3D);
+// scene.add(border);
 
 const keys = {
     ArrowUp: false,
@@ -96,23 +79,25 @@ window.addEventListener( 'keyup', ( event ) => {
 const movementSpeed = 0.05;
 
 player.add(camera);
+player.add(orthoCamera);
 
 const updateMovement = () => {
     if ( keys.ArrowUp ) player.translateZ(-movementSpeed);
     if ( keys.ArrowDown ) player.translateZ(movementSpeed);
     if ( keys.ArrowLeft ) player.translateX(-movementSpeed);
     if ( keys.ArrowRight ) player.translateX(movementSpeed);
+
     if ( keys.o ) player.rotation.y += 0.05
-    if ( keys.p ) player.rotation.y -= 0.05 
+    if ( keys.p ) player.rotation.y -= 0.05
 }
 
 const animate = () => {
     updateMovement();
     camera.lookAt(player.position);
-    renderer.render(scene, camera)
+    renderer.render(scene, orthoCamera)
 }
 
-const renderer = new THREE.WebGLRenderer( { alpha: true, antialias: true } );
+const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setSize(width, height);
 renderer.setAnimationLoop( animate );
 
