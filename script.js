@@ -40,6 +40,7 @@ loader3D.load(
 const buildingTexture = loader.load("./building.png");
 const planeTexture = loader.load("./grass.png");
 const sceneBGTexture = loader.load("./sky.png");
+const brickTexture = loader.load("./brick.png");
 
 const scene = new THREE.Scene();
 scene.background = sceneBGTexture;

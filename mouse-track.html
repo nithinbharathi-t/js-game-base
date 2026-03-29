@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Mouse Position: <span id="position">??</span></p>
+    <script type="module">
+        const positionElement = document.getElementById("position");
+        const windowWidth = window.innerWidth, windowHeight = window.innerHeight;
+        document.addEventListener("mousemove", (event) => {
+            const x = event.clientX, y = event.clientY;
+            const effectiveX = x -(windowWidth/2), effectiveY = y - (windowHeight/2 + .5)
+            positionElement.textContent = `(${effectiveX}, ${effectiveY})`;
+        })
+    </script>
+</body>
+</html>
